@@ -3,7 +3,7 @@
 "main": "uue.js",
 "version": "0.1.0",
 "description": "UUE decoder and encoder for Node.js",
-"keywords": ["UUE", "uuencode", "uudecode", "uuencoding", "uudecoding"],
+"keywords": ["uue", "uuencode", "uudecode", "uuencoding", "uudecoding"],
 "author": { "name": "Mithgol the Webmaster" },
 "repository": {
    "type": "git",
