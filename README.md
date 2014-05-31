@@ -28,6 +28,8 @@ Returns a string of UUE codes that represent the given source.
 
 * If `encodeSource` is a Node.js [Buffer](http://nodejs.org/docs/latest/api/buffer.html), the contents of that buffer become uuencoded.
 
+**Note: ** if a file's name is given to the `.encode` method, a synchronous reading of the given file is performed. If you need an asynchronous reading, perform it yourself and give the resulting Buffer to the `.encode` method.
+
 The optional `encodeOptions` parameter is an object with the following optional properties:
 
 * `mode` — read/write/execute permissions for the file. If this property is omitted, three last octal digits of the `mode` property of the given file's [`fs.Stats`](http://nodejs.org/docs/latest/api/fs.html#fs_class_fs_stats) object are used (or `'644'` if a Buffer is given in `encodeSource` instead of a file). The `mode` property may be given as a string (of octal digits) or as a number (for example, `'666'` and `438` are equivalent).
@@ -36,7 +38,7 @@ The optional `encodeOptions` parameter is an object with the following optiona
 
 * `eol` — end-of-line character(s). If this property is omitted, `\n` (`\x0A`) is used (as in Web or UN*X applications). You may want to set `encodeOptions.eol` equal to [`os.EOL`](http://nodejs.org/docs/latest/api/os.html#os_os_eol) on other systems. The value of `encodeOptions.eol` is used only as a separator between lines of UUE codes, but neither in the beginning nor at the end of the returned string.
 
-Example:
+Example (uuencoding the word `'Cat'`, [as in Wikipedia):](http://en.wikipedia.org/w/index.php?title=Uuencoding&oldid=607304984#Formatting_mechanism)
 
 ![(uuencoding example)](https://cloud.githubusercontent.com/assets/1088720/3140039/8953db68-e901-11e3-9759-0ebff59ea331.gif)
 
