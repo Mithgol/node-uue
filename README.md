@@ -42,6 +42,8 @@ The module **does not** lock any files and **does not** create any “lock 
 
 ## Testing the UUE module
 
+[![(build testing status)](https://travis-ci.org/Mithgol/node-uue.svg?branch=master)](https://travis-ci.org/Mithgol/node-uue)
+
 The tests are not included in the npm package of the module (to keep it small). Use the version from GitHub.
 
 It is necessary to install [Mocha](http://visionmedia.github.io/mocha/) and [JSHint](http://jshint.com/) for testing.
