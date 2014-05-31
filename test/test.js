@@ -1,5 +1,6 @@
 /* global describe, it */
 var assert = require('assert');
+var path = require('path');
 var UUE = require('../');
 
 describe('UUE encoder', function(){
@@ -29,6 +30,12 @@ describe('UUE encoder', function(){
          }),
          'begin 444 filename.ext\n#0V%T\n`\nend'
       );
+      assert.strictEqual(
+         UUE.encode(path.join(__dirname, 'cat.txt'), {
+            mode: '444'
+         }),
+         'begin 444 cat.txt\n#0V%T\n`\nend'
+      );
    });
 
    it("encodes 'Cats' buffer", function(){
@@ -42,6 +49,12 @@ describe('UUE encoder', function(){
             filename: 'filename.ext'
          }),
          'begin 444 filename.ext\n$0V%T<P``\n`\nend'
+      );
+      assert.strictEqual(
+         UUE.encode(path.join(__dirname, 'cats.txt'), {
+            mode: '444'
+         }),
+         'begin 444 cats.txt\n$0V%T<P``\n`\nend'
       );
    });
 });
