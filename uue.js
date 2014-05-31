@@ -6,6 +6,7 @@ var UUE = function(){
 };
 
 UUE.prototype.encode = function(encodeSource, encodeOptions){
+   /* jshint bitwise:false */
    if( typeof encodeOptions === 'undefined' ) encodeOptions = {};
 
    if( typeof encodeSource === 'string' ){ // treat as filename

@@ -40,6 +40,18 @@ The optional `encodeOptions` parameter is an object with the following optiona
 
 The module **does not** lock any files and **does not** create any “lock files” (flag files, semaphore files). The module's caller should control the access to the file being encoded.
 
+## Testing the UUE module
+
+The tests are not included in the npm package of the module (to keep it small). Use the version from GitHub.
+
+It is necessary to install [Mocha](http://visionmedia.github.io/mocha/) and [JSHint](http://jshint.com/) for testing.
+
+* You may install Mocha globally (`npm install mocha -g`) or locally (`npm install mocha` in the directory of the UUE module).
+
+* You may install JSHint globally (`npm install jshint -g`) or locally (`npm install jshint` in the directory of the UUE module).
+
+After that you may run `npm test` (in the directory of the UUE module).
+
 ## License
 
 MIT license (see the `LICENSE` file).
