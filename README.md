@@ -36,9 +36,13 @@ The optional `encodeOptions` parameter is an object with the following optiona
 
 * `eol` — end-of-line character(s). If this property is omitted, `\n` (`\x0A`) is used (as in Web or UN*X applications). You may want to set `encodeOptions.eol` equal to [`os.EOL`](http://nodejs.org/docs/latest/api/os.html#os_os_eol) on other systems. The value of `encodeOptions.eol` is used only as a separator between lines of UUE codes, but neither in the beginning nor at the end of the returned string.
 
+Example:
+
+![(uuencoding example)](https://cloud.githubusercontent.com/assets/1088720/3140039/8953db68-e901-11e3-9759-0ebff59ea331.gif)
+
 ## Locking files
 
-The module **does not** lock any files and **does not** create any “lock files” (flag files, semaphore files). The module's caller should control the access to the file being encoded.
+The module **does not** lock any files and **does not** create any “lock files” (flag files, semaphore files). The module's caller should control the access to the file that is being encoded.
 
 ## Testing the UUE module
 
