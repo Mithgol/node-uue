@@ -1,4 +1,4 @@
-The **UUE** module is able to decode [uuencoded](http://en.wikipedia.org/wiki/Uuencoding) files from a text message.
+The **UUE** module is able to perform [uuencoding](http://en.wikipedia.org/wiki/Uuencoding) of a file (or Node.js Buffer) to a text message.
 
 The module is named after a common `.UUE` suffix for Fidonet echomail areas spreading uuencoded files (sometimes the results of such encoding are also known as “UUE codes”).
 
