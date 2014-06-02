@@ -1,6 +1,6 @@
-The **UUE** module is able to perform [uuencoding](http://en.wikipedia.org/wiki/Uuencoding) of a file (or Node.js Buffer) to a text message.
+The **UUE** module is able to perform [uuencoding](http://en.wikipedia.org/wiki/Uuencoding) of a file (or Node.js Buffer) to a text message. This module is also able to find and decode uuencoded files in text messages.
 
-The module is named after a common `.UUE` suffix for Fidonet echomail areas spreading uuencoded files (sometimes the results of such encoding are also known as “UUE codes”).
+The module is named after a common `.UUE` suffix for Fidonet echomail areas where uuencoded files are posted (sometimes the results of such encoding are also known as “UUE codes”).
 
 The module is written in JavaScript and requires [Node.js](http://nodejs.org/) to run.
 
@@ -18,7 +18,7 @@ You may visit https://github.com/Mithgol/node-uue#readme occasionally to read t
 
 ## Using the UUE module
 
-When you `require()` the installed module, you get an object that has the following method:
+When you `require()` the installed module, you get an object that has the following methods:
 
 ### encode(encodeSource, encodeOptions)
 
@@ -41,6 +41,20 @@ The optional `encodeOptions` parameter is an object with the following optiona
 Example (uuencoding the word `'Cat'`, [as in Wikipedia):](http://en.wikipedia.org/w/index.php?title=Uuencoding&oldid=607304984#Formatting_mechanism)
 
 ![(uuencoding example)](https://cloud.githubusercontent.com/assets/1088720/3140039/8953db68-e901-11e3-9759-0ebff59ea331.gif)
+
+### decodeFile(text, filename)
+
+Using the given `filename`, finds the uuencoded file in the given `text`, decodes the file and returns it as a Node.js [Buffer.](http://nodejs.org/docs/latest/api/buffer.html)
+
+Lines in the given `text` are expected to be separated by `'\n'` (`\x0A`).
+
+Invalid UUE codes are ignored.
+
+Any UUE codes of any file that has a different filename (not the given `filename`) are ignored. (If `text` contains several uuencoded files, it is not necessary for `filename` to go first.)
+
+If several uuencoded files have the same `filename`, only the first is returned.
+
+If the file cannot be found, `null` is returned.
 
 ## Locking files
 
