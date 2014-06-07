@@ -1,3 +1,4 @@
+require('array.prototype.findindex');
 var fs = require('fs');
 var path = require('path');
 
@@ -237,6 +238,105 @@ UUE.prototype.decodeFile = function(text, filename){
    });
 
    return fileFound;
+};
+
+UUE.prototype.decodeAllFiles = function(text){
+   var allFiles = [];
+   var matches = [];
+   var potentialUUE = RegExp(
+      [
+         '^begin [0-7]{3} (\\S+?)\n',
+         '(',
+         '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
+         ')',
+         '`\n',
+         'end$'
+      ].join(''),
+      'gm'
+   );
+
+   var continueSearch = true;
+   do {
+      var nextMatch = potentialUUE.exec(text);
+      if( nextMatch === null ){
+         continueSearch = false;
+      } else {
+         matches.push(nextMatch);
+      }
+   } while( continueSearch );
+
+   if( matches.length === 0 ) return [];
+
+   matches.forEach(function(nextMatch){
+      var nextFilename = nextMatch[1];
+      var idxFilename = allFiles.findIndex(function(nextFile){
+         return nextFile.name === nextFilename;
+      });
+      if( idxFilename > -1 ) return; // already found, skip it
+
+      if( nextMatch[2].length < 1 ){
+         allFiles.push({
+            name: nextFilename,
+            data: new Buffer(0)
+         });
+         return;
+      }
+
+      var decodingError = false;
+      var decoded = nextMatch[2].split('\n');
+      decoded.pop(); // cut last \n (it is not a separator)
+      decoded = decoded.map(function(lineUUE){
+         /* jshint bitwise:false */
+         if( decodingError ) return null;
+
+         var byteLength = (lineUUE.charCodeAt(0) - 32) % 64;
+         if( byteLength === 0 ) return new Buffer(0);
+
+         var charLength = ( (byteLength / 3) |0 ) * 4;
+         if( byteLength % 3 !== 0 ) charLength += 4;
+         if( 1 + charLength > lineUUE.length ){
+            decodingError = true;
+            return null;
+         }
+         var targetBuffer = new Buffer(byteLength);
+
+         var step, total;
+         var stringOffset = 1;
+         var bufferOffset = 0;
+         for( step = 0; step < ( (charLength / 4) |0 ); step++ ){
+            total = 0;
+
+            total += ((lineUUE.charCodeAt(stringOffset) - 32) % 64) << 18;
+            stringOffset++;
+            total += ((lineUUE.charCodeAt(stringOffset) - 32) % 64) << 12;
+            stringOffset++;
+            total += ((lineUUE.charCodeAt(stringOffset) - 32) % 64) << 6;
+            stringOffset++;
+            total +=  (lineUUE.charCodeAt(stringOffset) - 32) % 64;
+            stringOffset++;
+
+            // noAssert === true:
+            // silently apply &0xFF mask, silently drop after byteLength
+            targetBuffer.writeUInt8( total >>> 16, bufferOffset, true );
+            bufferOffset++;
+            targetBuffer.writeUInt8( total >>> 8, bufferOffset, true );
+            bufferOffset++;
+            targetBuffer.writeUInt8( total, bufferOffset, true );
+            bufferOffset++;
+         }
+         return targetBuffer;
+      });
+      if( decodingError ) return;
+
+      // now `decoded` is a valid array containing buffers,
+      // because `null` could appear only in `decodingError` state
+      allFiles.push({
+         name: nextFilename,
+         data: Buffer.concat(decoded)
+      });
+   });
+
+   return allFiles;
 };
 
 UUE.prototype.errors = {

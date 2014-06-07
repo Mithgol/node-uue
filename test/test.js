@@ -60,6 +60,17 @@ describe('UUE encoder', function(){
 });
 
 describe('UUE file finder and decoder', function(){
+   it("when UUE codes are absent, `null` is returned", function(){
+      assert.strictEqual(
+         UUE.decodeFile(
+            'some text' +
+            '\n foo bar',
+            'filename.ext'
+         ),
+         null
+      );
+   });
+
    it("decodes empty buffer", function(){
       assert.strictEqual(
          UUE.decodeFile(
@@ -126,6 +137,76 @@ describe('UUE file finder and decoder', function(){
             'filename.ext'
          ),
          null
+      );
+   });
+});
+
+describe('multiple UUE file finder and decoder', function(){
+   it("when UUE codes are absent, an empty array is returned", function(){
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'some text' +
+            '\n foo bar'
+         ),
+         []
+      );
+   });
+
+   it("decodes empty buffer", function(){
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'begin 644 buffer.bin\n`\nend'
+         ),
+         [{ name: 'buffer.bin', data: Buffer(0) }]
+      );
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'begin 444 filename.ext\n`\n`\n`\nend'
+         ),
+         [{ name: 'filename.ext', data: Buffer(0) }]
+      );
+   });
+
+   it("decodes 'Cat' buffer", function(){
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'begin 644 buffer.bin\n#0V%T\n`\nend'
+         ),
+         [{ name: 'buffer.bin', data: Buffer([ 67, 97, 116 ]) }]
+      );
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'begin 444 cat.txt\n#0V%T\n`\nend'
+         ),
+         [{ name: 'cat.txt', data: Buffer([ 67, 97, 116 ]) }]
+      );
+   });
+
+   it("decodes 'Cats' buffer (and 'Cat' if it's also encountered)",function(){
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'foo bar \n' +
+            'begin 644 buffer.bin\n$0V%T<P``\n`\nend'
+         ),
+         [{ name: 'buffer.bin', data: Buffer('Cats', 'ascii') }]
+      );
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'begin 444 cat.txt\n#0V%T\n`\nend\n' +
+            'foo bar \n' +
+            'begin 444 cats.txt\n$0V%T<P``\n`\nend',
+            'cats.txt'
+         ),
+         [
+            { name: 'cat.txt', data: Buffer([ 67, 97, 116 ]) },
+            { name: 'cats.txt', data: Buffer('Cats', 'ascii') }
+         ]
+      );
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'begin 444 cats.txt\n$0V%T<P``\n`\nend'
+         ),
+         [{ name: 'cats.txt', data: Buffer('Cats', 'ascii') }]
       );
    });
 });

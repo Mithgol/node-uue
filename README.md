@@ -52,9 +52,27 @@ Invalid UUE codes are ignored.
 
 Any UUE codes of any file that has a different filename (not the given `filename`) are ignored. (If `text` contains several uuencoded files, it is not necessary for `filename` to go first.)
 
-If several uuencoded files have the same `filename`, only the first is returned.
+If several uuencoded files have the same `filename` (case-sensitive), only the first is returned (its other namesakes are ignored).
 
-If the file cannot be found, `null` is returned.
+If the file cannot be found in the given `text`, `null` is returned.
+
+### decodeAllFiles(text)
+
+Finds all uuencoded files in the given `text`, decodes them and returns as an array.
+
+Entries in the returned array are objects with the following properties:
+
+* `name` — the file's name (as it appeared in UUE codes);
+
+* `data` — a Node.js [Buffer](http://nodejs.org/docs/latest/api/buffer.html) containing the file's decoded contents.
+
+Lines in the given `text` are expected to be separated by `'\n'` (`\x0A`).
+
+Invalid UUE codes are ignored.
+
+The returned array contains files in order of their appearance in the given `text`. If several uuencoded files have the same `name` (case-sensitive), only the first file is returned (its other namesakes are ignored).
+
+If the given `text` does not seem to contain any uuencoded files, an empty array (`[]`) is returned.
 
 ## Locking files
 
