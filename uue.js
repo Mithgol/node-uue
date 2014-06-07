@@ -1,6 +1,7 @@
 require('array.prototype.findindex');
 var fs = require('fs');
 var path = require('path');
+var extend = require('extend');
 
 var UUE = function(){
    if (!(this instanceof UUE)) return new UUE();
@@ -8,48 +9,50 @@ var UUE = function(){
 
 UUE.prototype.encode = function(encodeSource, encodeOptions){
    /* jshint bitwise:false */
-   if( typeof encodeOptions === 'undefined' ) encodeOptions = {};
+   var options = extend(
+      {},
+      { mode: null, filename: null, eol: null },
+      encodeOptions
+   );
 
    if( typeof encodeSource === 'string' ){ // treat as filename
-      // check encodeOptions.mode
-      if( typeof encodeOptions.mode === 'undefined' ){
-         encodeOptions.mode = (
+      // check options.mode
+      if( options.mode === null ){
+         options.mode = (
             fs.statSync(encodeSource).mode & parseInt('777', 8)
          ).toString(8);
-      } else if( typeof encodeOptions.mode !== 'string' ){
-         encodeOptions.mode = encodeOptions.mode.toString(8);
+      } else if( typeof options.mode !== 'string' ){
+         options.mode = options.mode.toString(8);
       }
 
-      // check encodeOptions.filename
-      if( typeof encodeOptions.filename === 'undefined' ){
-         encodeOptions.filename = path.basename(encodeSource);
+      // check options.filename
+      if( options.filename === null ){
+         options.filename = path.basename(encodeSource);
       }
 
       // make encodeSource a buffer
       encodeSource = fs.readFileSync(encodeSource);
    } else if( Buffer.isBuffer(encodeSource) ){ // treat as buffer
-      // check encodeOptions.mode
-      if( typeof encodeOptions.mode === 'undefined' ){
-         encodeOptions.mode = '644';
-      } else if( typeof encodeOptions.mode !== 'string' ){
-         encodeOptions.mode = encodeOptions.mode.toString(8);
+      // check options.mode
+      if( options.mode === null ){
+         options.mode = '644';
+      } else if( typeof options.mode !== 'string' ){
+         options.mode = options.mode.toString(8);
       }
 
-      // check encodeOptions.filename
-      if( typeof encodeOptions.filename === 'undefined' ){
-         encodeOptions.filename = 'buffer.bin';
-      }
+      // check options.filename
+      if( options.filename === null ) options.filename = 'buffer.bin';
    } else throw new Error(this.errors.UNKNOWN_SOURCE_TYPE);
 
-   if( typeof encodeOptions.eol === 'undefined' ) encodeOptions.eol = '\n';
+   if( options.eol === null ) options.eol = '\n';
 
    // now encodeSource is always a buffer
    var output = [];
    output.push('begin ');
-   output.push(encodeOptions.mode);
+   output.push(options.mode);
    output.push(' ');
-   output.push(encodeOptions.filename);
-   output.push(encodeOptions.eol);
+   output.push(options.filename);
+   output.push(options.eol);
 
    var offset = 0;
    while( offset < encodeSource.length ){
@@ -142,11 +145,11 @@ UUE.prototype.encode = function(encodeSource, encodeOptions){
             output.push(String.fromCharCode(charCode + 32));
          }
       }
-      output.push(encodeOptions.eol);
+      output.push(options.eol);
    }
 
    output.push('`');
-   output.push(encodeOptions.eol);
+   output.push(options.eol);
    output.push('end');
    return output.join('');
 };
