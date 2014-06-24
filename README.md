@@ -48,9 +48,9 @@ Using the given `filename`, finds the uuencoded file in the given `text`, dec
 
 Lines in the given `text` are expected to be separated by `'\n'` (`\x0A`).
 
-Invalid UUE codes are ignored.
+Invalid UUE codes are ignored entirely (even if only one line of some UUE code block is wrong, that code block is not decoded).
 
-Any UUE codes of any file that has a different filename (not the given `filename`) are ignored. (If `text` contains several uuencoded files, it is not necessary for `filename` to go first.)
+Any UUE codes of any file that has a different filename (i.e. not the given `filename`) are ignored. (In other words, even if `text` contains several uuencoded files, it is not necessary for the file with the given `filename` to be first of them: files with other names may precede it, and it still will be found and decoded nevertheless.)
 
 If several uuencoded files have the same `filename` (case-sensitive), only the first is returned (its other namesakes are ignored).
 
@@ -68,7 +68,7 @@ Entries in the returned array are objects with the following properties:
 
 Lines in the given `text` are expected to be separated by `'\n'` (`\x0A`).
 
-Invalid UUE codes are ignored.
+Invalid UUE codes are ignored entirely (even if only one line of some UUE code block is wrong, that code block is not decoded).
 
 The returned array contains files in order of their appearance in the given `text`. If several uuencoded files have the same `name` (case-sensitive), only the first file is returned (its other namesakes are ignored).
 
