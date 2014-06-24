@@ -6,7 +6,7 @@ The module is written in JavaScript and requires [Node.js](http://nodejs.org/
 
 ## Installing the UUE module
 
-[![(npm package version)](https://nodei.co/npm/uue.png?downloads=true)](https://npmjs.org/package/uue)
+[![(npm package version)](https://nodei.co/npm/uue.png?downloads=true)](https://npmjs.org/package/uue) [![(a histogram of downloads)](https://nodei.co/npm-dl/uue.png?months=3)](https://npmjs.org/package/uue)
 
 * Latest packaged version: `npm install uue`
 
