@@ -247,7 +247,7 @@ UUE.prototype.decodeAllFiles = function(text){
    var allFiles = [];
    var matches = [];
    var potentialUUE = RegExp(
-      [
+      [ // detail-capturing version of the RegExp from `.split`
          '^begin [0-7]{3} (\\S+?)\n',
          '(',
          '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
@@ -342,8 +342,65 @@ UUE.prototype.decodeAllFiles = function(text){
    return allFiles;
 };
 
+UUE.prototype.split = function(text){
+   var processUUE = this;
+   var potentialUUE = RegExp(
+      [ // entirely-capturing version of the RegExp from `.decodeAllFiles`
+         '(',
+         '^begin [0-7]{3} \\S+?\n',
+         '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
+         '`\n',
+         'end$',
+         ')'
+      ].join(''),
+      'gm'
+   );
+   return text.split(potentialUUE).map(function(fragment, idx, arr){
+      /* jshint indent: false */
+      if( idx % 2 === 0 ){ // simple string fragment's index: 0, 2, 4...
+         return fragment;
+      } else { // regex-captured fragment's index: 1, 3, 5...
+         var decodedFiles = processUUE.decodeAllFiles(fragment);
+         switch( decodedFiles.length ){
+            case 0:
+               // incorrect UUE, append to the previous (always text) fragment
+               arr[idx-1] += fragment;
+               return null;
+            //break;
+            case 1:
+               // correct UUE
+               decodedFiles[0].source = fragment;
+               decodedFiles[0].type = 'UUE';
+               return decodedFiles[0];
+            //break;
+            default: throw new Error(this.errors.UNEXPECTED_NUMBER_OF_FILES);
+         }
+      }
+   }).filter(function(nextElement){
+      if( nextElement === '' ) return false;
+      if( nextElement === null ) return false;
+
+      return true;
+   }).reduce(function(builtArray, nextFragment){
+      if( typeof nextFragment !== 'string' ){
+         builtArray.push(nextFragment);
+      } else { // typeof nextFragment === 'string'
+         if(
+            builtArray.length > 0 &&
+            typeof builtArray[builtArray.length - 1] === 'string'
+         ){ // the array's last element is also a string; appending:
+            builtArray[builtArray.length - 1] += nextFragment;
+         } else {
+            builtArray.push(nextFragment);
+         }
+      }
+      return builtArray;
+   }, []);
+};
+
 UUE.prototype.errors = {
-   UNKNOWN_SOURCE_TYPE: "The source's type is unknown!"
+   UNKNOWN_SOURCE_TYPE: "The source's type is unknown!",
+   UNEXPECTED_NUMBER_OF_FILES: "Unexpected number of files in a fragment!"
 };
 
 module.exports = new UUE();

@@ -74,6 +74,30 @@ The returned array contains files in order of their appearance in the given `
 
 If the given `text` does not seem to contain any uuencoded files, an empty array (`[]`) is returned.
 
+### split(text)
+
+Finds all uuencoded files in the given `text` and splits that text into an array of text blocks and UUE blocks.
+
+Text blocks of the returned array are JavaScript strings.
+
+UUE blocks of the returned array are objects representing the decoded files. Each object has the following properties:
+
+* `name` — the file's name (as it appeared in UUE codes);
+
+* `data` — a Node.js [Buffer](http://nodejs.org/docs/latest/api/buffer.html) containing the file's decoded contents.
+
+* `source` — a JavaScript string containing source UUE codes of the file from (and including) the beginning `'begin'` to (and including) the final `'end'`.
+
+* `type` — always the JavaScript string `'UUE'`. Might help in further processing of the array (i.e. if other types of blocks are going to be decoded from text blocks).
+
+Lines in the given `text` are expected to be separated by `'\n'` (`\x0A`).
+
+Invalid UUE codes are ignored entirely (even if only one line of some UUE code block is wrong, that code block is not decoded and instead is returned as a part of some text block).
+
+The returned array contains blocks in order of their appearance in the given `text`. Unlike `.decodeAllFiles`, even if several uuencoded files have the same `name`, none of them becomes deliberately ignored.
+
+Empty strings (`''`) do not become text blocks of the returned array. (For example, if the given `text` starts with UUE codes, then the first of the returned blocks is a UUE block instead of an empty text block.) This nuance makes this method slightly different from its String's namesake (where `'foo'.split(/(f)/)` returns `['', 'f', 'oo']`) and thus `typeof` has to be used instead of checking whether some element's index is even (or odd).
+
 ## Locking files
 
 The module **does not** lock any files and **does not** create any “lock files” (flag files, semaphore files). The module's caller should control the access to the file that is being encoded.

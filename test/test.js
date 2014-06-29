@@ -194,8 +194,8 @@ describe('multiple UUE file finder and decoder', function(){
          UUE.decodeAllFiles(
             'begin 444 cat.txt\n#0V%T\n`\nend\n' +
             'foo bar \n' +
-            'begin 444 cats.txt\n$0V%T<P``\n`\nend',
-            'cats.txt'
+            'begin 444 cats.txt\n$0V%T<P``\n`\nend' +
+            '\ncats.txt'
          ),
          [
             { name: 'cat.txt', data: Buffer([ 67, 97, 116 ]) },
@@ -207,6 +207,131 @@ describe('multiple UUE file finder and decoder', function(){
             'begin 444 cats.txt\n$0V%T<P``\n`\nend'
          ),
          [{ name: 'cats.txt', data: Buffer('Cats', 'ascii') }]
+      );
+   });
+});
+
+describe('UUE / text splitter', function(){
+   it("when the text is empty, an empty array is returned", function(){
+      assert.deepEqual(
+         UUE.split(''),
+         []
+      );
+   });
+
+   it("when UUE codes are absent, the text is returned as a whole",function(){
+      assert.deepEqual(
+         UUE.split(
+            'some text' +
+            '\n foo bar'
+         ),
+         [
+            'some text' +
+            '\n foo bar'
+         ]
+      );
+   });
+
+   it("decodes empty buffer", function(){
+      assert.deepEqual(
+         UUE.split(
+            'begin 644 buffer.bin\n`\nend'
+         ),
+         [{
+            name: 'buffer.bin',
+            data: Buffer(0),
+            source: 'begin 644 buffer.bin\n`\nend',
+            type: 'UUE'
+         }]
+      );
+      assert.deepEqual(
+         UUE.split(
+            'begin 444 filename.ext\n`\n`\n`\nend'
+         ),
+         [{
+            name: 'filename.ext',
+            data: Buffer(0),
+            source: 'begin 444 filename.ext\n`\n`\n`\nend',
+            type: 'UUE'
+         }]
+      );
+   });
+
+   it("decodes 'Cat' buffer", function(){
+      assert.deepEqual(
+         UUE.split(
+            'begin 644 buffer.bin\n#0V%T\n`\nend'
+         ),
+         [{
+            name: 'buffer.bin',
+            data: Buffer([ 67, 97, 116 ]),
+            source: 'begin 644 buffer.bin\n#0V%T\n`\nend',
+            type: 'UUE'
+         }]
+      );
+      assert.deepEqual(
+         UUE.split(
+            'begin 444 cat.txt\n#0V%T\n`\nend'
+         ),
+         [{
+            name: 'cat.txt',
+            data: Buffer([ 67, 97, 116 ]),
+            source: 'begin 444 cat.txt\n#0V%T\n`\nend',
+            type: 'UUE'
+         }]
+      );
+   });
+
+   it("decodes 'Cats' buffer (and 'Cat' if it's also encountered)",function(){
+      assert.deepEqual(
+         UUE.split(
+            'foo bar \n' +
+            'begin 644 buffer.bin\n$0V%T<P``\n`\nend'
+         ),
+         [
+            'foo bar \n',
+            {
+               name: 'buffer.bin',
+               data: Buffer('Cats', 'ascii'),
+               source: 'begin 644 buffer.bin\n$0V%T<P``\n`\nend',
+               type: 'UUE'
+            }
+         ]
+      );
+      assert.deepEqual(
+         UUE.split(
+            'begin 444 cat.txt\n#0V%T\n`\nend\n' +
+            'foo bar \n' +
+            'begin 444 cats.txt\n$0V%T<P``\n`\nend' +
+            '\ncats.txt'
+         ),
+         [
+            {
+               name: 'cat.txt',
+               data: Buffer([ 67, 97, 116 ]),
+               source: 'begin 444 cat.txt\n#0V%T\n`\nend',
+               type: 'UUE'
+            },
+            '\nfoo bar \n',
+            {
+               name: 'cats.txt',
+               data: Buffer('Cats', 'ascii'),
+               source: 'begin 444 cats.txt\n$0V%T<P``\n`\nend',
+               type: 'UUE'
+            },
+            '\ncats.txt'
+         ]
+      );
+      assert.deepEqual(
+         UUE.split(
+            'begin 444 cats.txt\n$0V%T<P``\n`\nend'
+         ),
+         [{
+            name: 'cats.txt',
+            data: Buffer('Cats', 'ascii'),
+            source: 'begin 444 cats.txt\n$0V%T<P``\n`\nend',
+            type: 'UUE'
+         }]
       );
    });
 });
