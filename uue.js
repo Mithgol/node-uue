@@ -373,7 +373,9 @@ UUE.prototype.split = function(text){
                decodedFiles[0].type = 'UUE';
                return decodedFiles[0];
             //break;
-            default: throw new Error(this.errors.UNEXPECTED_NUMBER_OF_FILES);
+            default: throw new Error(
+               processUUE.errors.UNEXPECTED_NUMBER_OF_FILES
+            );
          }
       }
    }).filter(function(nextElement){

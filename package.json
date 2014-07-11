@@ -1,7 +1,7 @@
 {
 "name": "uue",
 "main": "uue.js",
-"version": "1.2.0",
+"version": "1.2.1",
 "description": "UUE decoder and encoder for Node.js",
 "keywords": ["uue", "uuencode", "uudecode", "uuencoding", "uudecoding"],
 "author": { "name": "Mithgol the Webmaster" },
