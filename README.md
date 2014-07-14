@@ -88,7 +88,7 @@ UUE blocks of the returned array are objects representing the decoded files. E
 
 * `source` — a JavaScript string containing source UUE codes of the file from (and including) the beginning `'begin'` to (and including) the final `'end'`.
 
-* `type` — always the JavaScript string `'UUE'`. Might help in further processing of the array (i.e. if other types of blocks are going to be decoded from text blocks).
+* `type` — always the JavaScript string `'UUE'`. Might help in further processing of the array (i.e. if other types of blocks are going to be decoded from text blocks; for example, in an [abstract syntax tree](https://github.com/Mithgol/node-abstract-syntax-tree)).
 
 Lines in the given `text` are expected to be separated by `'\n'` (`\x0A`).
 
