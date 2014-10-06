@@ -2,7 +2,7 @@ The **UUE** module is able to perform [uuencoding](http://en.wikipedia.org/wik
 
 The module is named after a common `.UUE` suffix for Fidonet echomail areas where uuencoded files are posted (sometimes the results of such encoding are also known as “UUE codes”).
 
-The module is written in JavaScript and requires [Node.js](http://nodejs.org/) to run.
+The module is written in JavaScript and requires [Node.js](http://nodejs.org/) to run. (Node.js version 0.10.x is recommended.)
 
 ## Installing the UUE module
 
