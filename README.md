@@ -98,6 +98,8 @@ The returned array contains blocks in order of their appearance in the given 
 
 Empty strings (`''`) do not become text blocks of the returned array. (For example, if the given `text` starts with UUE codes, then the first of the returned blocks is a UUE block instead of an empty text block.) This nuance makes this method slightly different from its String's namesake (where `'foo'.split(/(f)/)` returns `['', 'f', 'oo']`) and thus `typeof` has to be used instead of checking whether some element's index is even (or odd).
 
+A line separator `'\n'` (`\x0A`) that immediately precedes or follows a UUE block does not become a part of that block; instead of it such separator becomes a part of an adjacent JavaScript string.
+
 ## Locking files
 
 The module **does not** lock any files and **does not** create any “lock files” (flag files, semaphore files). The module's caller should control the access to the file that is being encoded.
