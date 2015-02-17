@@ -139,6 +139,16 @@ describe('UUE file finder and decoder', function(){
          null
       );
    });
+
+   it("decodes file with space instead of backtick before end", function(){
+      assert.strictEqual(
+         UUE.decodeFile(
+            'begin 644 buffer.bin\n \nend',
+            'buffer.bin'
+         ).toString('binary'),
+         Buffer(0).toString('binary')
+      );
+   });
 });
 
 describe('multiple UUE file finder and decoder', function(){
