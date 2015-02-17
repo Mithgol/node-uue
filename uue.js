@@ -162,7 +162,7 @@ UUE.prototype.decodeFile = function(text, filename){
          '(',
          '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
          ')',
-         '`\n',
+         '(?:`| )\n',
          'end$'
       ].join(''),
       'gm'
@@ -252,7 +252,7 @@ UUE.prototype.decodeAllFiles = function(text){
          '(',
          '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
          ')',
-         '`\n',
+         '(?:`| )\n',
          'end$'
       ].join(''),
       'gm'
@@ -349,7 +349,7 @@ UUE.prototype.split = function(text){
          '(',
          '^begin [0-7]{3} \\S+?\n',
          '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
-         '`\n',
+         '(?:`| )\n',
          'end$',
          ')'
       ].join(''),
