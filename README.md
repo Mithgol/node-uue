@@ -2,7 +2,9 @@ The **UUE** module is able to perform [uuencoding](http://en.wikipedia.org/wik
 
 The module is named after a common `.UUE` suffix for Fidonet echomail areas where uuencoded files are posted (sometimes the results of such encoding are also known as “UUE codes”).
 
-The module is written in JavaScript and requires [Node.js](http://nodejs.org/) to run. (Node.js version 0.10.x or 0.12.x is recommended. The latest stable [io.js](https://iojs.org/) is fine too.)
+The module is written in JavaScript and requires [Node.js](http://nodejs.org/) to run.
+* Starting from v3.0.0, this module requires Node.js version 4.0.0 or newer.
+* You may run older versions of this module in Node.js version 0.10.x or 0.12.x. These older versions, however, had to contain an additional dependency ([`array.prototype.findindex`](https://www.npmjs.com/package/array.prototype.findindex)) as a polyfill for a missing [ECMAScript 2015 (ES6) feature](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/findIndex) which is now a part of Node.js.
 
 ## Installing the UUE module
 
