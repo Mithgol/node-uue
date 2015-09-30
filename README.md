@@ -34,7 +34,9 @@ Returns a string of UUE codes that represent the given source.
 
 The optional `encodeOptions` parameter is an object with the following optional properties:
 
-* `mode` — read/write/execute permissions for the file. If this property is omitted, three last octal digits of the `mode` property of the given file's [`fs.Stats`](http://nodejs.org/docs/latest/api/fs.html#fs_class_fs_stats) object are used (or `'644'` if a Buffer is given in `encodeSource` instead of a file). The `mode` property may be given as a string (of octal digits) or as a number (for example, `'666'` and `438` are equivalent).
+* `mode` — read/write/execute permissions for the file.
+   * The `mode` property may be given as a string (of octal digits) or as a number (for example, `'666'` and `438` are equivalent). You may even use [an octal number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Lexical_grammar#Numeric_literals) if your engine supports this ECMAScript 6 feature. (For example, `'644'` and `0o644` are equivalent in Node 4.0.0 or newer.)
+   * If this property is omitted, three last octal digits of the `mode` property of the given file's [`fs.Stats`](http://nodejs.org/docs/latest/api/fs.html#fs_class_fs_stats) object are used (or `'644'` if a Buffer is given in `encodeSource` instead of a file).
 
 * `filename` — a file's name to be given in UUE codes. (For example, if `encodeOptions` is `{mode:'664', filename:'filename.ext'}`, then the first line of UUE codes is `begin 664 filename.ext`.) If this property is omitted, then [`path.basename(encodeSource)`](http://nodejs.org/docs/latest/api/path.html#path_path_basename_p_ext) is used (or `'buffer.bin'` if a Buffer is given in `encodeSource` instead of a file).
 
