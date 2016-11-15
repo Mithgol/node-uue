@@ -4,7 +4,7 @@ var path = require('path');
 var UUE = require('../');
 
 describe('UUE encoder', function(){
-   it('encodes empty buffer', function(){
+   it('encodes empty buffer, can use whitespaces in its filename', function(){
       assert.strictEqual(
          UUE.encode(Buffer([ ])),
          'begin 644 buffer.bin\n`\nend'
@@ -12,13 +12,13 @@ describe('UUE encoder', function(){
       assert.strictEqual(
          UUE.encode(Buffer([ ]), {
             mode: '444',
-            filename: 'filename.ext'
+            filename: "empty file's name.ext"
          }),
-         'begin 444 filename.ext\n`\nend'
+         "begin 444 empty file's name.ext\n`\nend"
       );
    });
 
-   it("encodes 'Cat' buffer", function(){
+   it("encodes 'Cat' buffer, can use whitespaces in its filename", function(){
       assert.strictEqual(
          UUE.encode(Buffer([ 67, 97, 116 ])),
          'begin 644 buffer.bin\n#0V%T\n`\nend'
@@ -26,9 +26,9 @@ describe('UUE encoder', function(){
       assert.strictEqual(
          UUE.encode(Buffer([ 67, 97, 116 ]), {
             mode: '444',
-            filename: 'filename.ext'
+            filename: "cat's file name.ext"
          }),
-         'begin 444 filename.ext\n#0V%T\n`\nend'
+         "begin 444 cat's file name.ext\n#0V%T\n`\nend"
       );
       assert.strictEqual(
          UUE.encode(path.join(__dirname, 'cat.txt'), {
@@ -38,7 +38,8 @@ describe('UUE encoder', function(){
       );
    });
 
-   it("encodes 'Cats' buffer", function(){
+   it("encodes 'Cats' buffer, also can use whitespaces in its filename",
+   function(){
       assert.strictEqual(
          UUE.encode(Buffer('Cats', 'ascii')),
          'begin 644 buffer.bin\n$0V%T<P``\n`\nend'
@@ -46,9 +47,9 @@ describe('UUE encoder', function(){
       assert.strictEqual(
          UUE.encode(Buffer('Cats', 'ascii'), {
             mode: '444',
-            filename: 'filename.ext'
+            filename: "cats' file name.ext"
          }),
-         'begin 444 filename.ext\n$0V%T<P``\n`\nend'
+         "begin 444 cats' file name.ext\n$0V%T<P``\n`\nend"
       );
       assert.strictEqual(
          UUE.encode(path.join(__dirname, 'cats.txt'), {
@@ -140,13 +141,31 @@ describe('UUE file finder and decoder', function(){
       );
    });
 
-   it("decodes file with space instead of backtick before end", function(){
+   it('decodes it if a space (instead of a backtick) is used before `end`',
+   function(){
       assert.strictEqual(
          UUE.decodeFile(
-            'begin 644 buffer.bin\n \nend',
+            'foo bar \n' +
+            'begin 644 buffer.bin\n$0V%T<P``\n \nend',
             'buffer.bin'
          ).toString('binary'),
-         Buffer(0).toString('binary')
+         Buffer('Cats', 'ascii').toString('binary')
+      );
+      assert.strictEqual(
+         UUE.decodeFile(
+            'begin 444 cat.txt\n#0V%T\n \nend\n' +
+            'foo bar \n' +
+            'begin 444 cats.txt\n$0V%T<P``\n \nend',
+            'cats.txt'
+         ).toString('binary'),
+         Buffer('Cats', 'ascii').toString('binary')
+      );
+      assert.strictEqual(
+         UUE.decodeFile(
+            'begin 444 cats.txt\n$0V%T<P``\n \nend',
+            'filename.ext'
+         ),
+         null
       );
    });
 });
