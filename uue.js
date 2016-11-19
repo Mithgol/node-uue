@@ -247,7 +247,7 @@ UUE.prototype.decodeAllFiles = function(text){
    var matches = [];
    var potentialUUE = RegExp(
       [ // detail-capturing version of the RegExp from `.split`
-         '^begin [0-7]{3} (\\S+?)\n',
+         '^begin [0-7]{3} (\\S(?:.*?\\S)?)\n',
          '(',
          '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
          ')',
@@ -346,7 +346,7 @@ UUE.prototype.split = function(text){
    var potentialUUE = RegExp(
       [ // entirely-capturing version of the RegExp from `.decodeAllFiles`
          '(',
-         '^begin [0-7]{3} \\S+?\n',
+         '^begin [0-7]{3} \\S(?:.*?\\S)?\n',
          '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
          '(?:`| )\n',
          'end$',

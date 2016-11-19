@@ -108,6 +108,12 @@ A line separator `'\n'` (`\x0A`) that immediately precedes or follows a UUE b
 
 The module **does not** lock any files and **does not** create any “lock files” (flag files, semaphore files). The module's caller should control the access to the file that is being encoded.
 
+## Resolved compatibility issues
+
+* Version 2.1.0 (and newer) accepts UUE codes that use a whitespace (instead of a backtick) on a line that immediately precedes their final `end`.
+
+* Version 3.1.0 (and newer) has no problems decoding files that have whitespaces in the middle of their filenames.
+
 ## Testing the UUE module
 
 [![(build testing status)](https://img.shields.io/travis/Mithgol/node-uue/master.svg?style=plastic)](https://travis-ci.org/Mithgol/node-uue)
