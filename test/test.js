@@ -168,6 +168,26 @@ describe('UUE file finder and decoder', function(){
          null
       );
    });
+
+   it("decodes if a whitespace appears in the filename", function(){
+      assert.strictEqual(
+         UUE.decodeFile(
+            'foo bar \n' +
+            'begin 644 some buffer.bin\n$0V%T<P``\n`\nend',
+            'some buffer.bin'
+         ).toString('binary'),
+         Buffer('Cats', 'ascii').toString('binary')
+      );
+      assert.strictEqual(
+         UUE.decodeFile(
+            'begin 444 cat.txt\n#0V%T\n`\nend\n' +
+            'foo bar \n' +
+            'begin 444 several cats.txt\n$0V%T<P``\n`\nend',
+            'several cats.txt'
+         ).toString('binary'),
+         Buffer('Cats', 'ascii').toString('binary')
+      );
+   });
 });
 
 describe('multiple UUE file finder and decoder', function(){
@@ -236,6 +256,63 @@ describe('multiple UUE file finder and decoder', function(){
             'begin 444 cats.txt\n$0V%T<P``\n`\nend'
          ),
          [{ name: 'cats.txt', data: Buffer('Cats', 'ascii') }]
+      );
+   });
+
+   it("does the same if a space (instead of a backtick) is used before `end`",
+   function(){
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'foo bar \n' +
+            'begin 644 buffer.bin\n$0V%T<P``\n \nend'
+         ),
+         [{ name: 'buffer.bin', data: Buffer('Cats', 'ascii') }]
+      );
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'begin 444 cat.txt\n#0V%T\n`\nend\n' +
+            'foo bar \n' +
+            'begin 444 cats.txt\n$0V%T<P``\n \nend' +
+            '\ncats.txt'
+         ),
+         [
+            { name: 'cat.txt', data: Buffer([ 67, 97, 116 ]) },
+            { name: 'cats.txt', data: Buffer('Cats', 'ascii') }
+         ]
+      );
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'begin 444 cats.txt\n$0V%T<P``\n \nend'
+         ),
+         [{ name: 'cats.txt', data: Buffer('Cats', 'ascii') }]
+      );
+   });
+
+   it("does the same if a whitespace appears in the filename", function(){
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'foo bar \n' +
+            'begin 644 some buffer.bin\n$0V%T<P``\n`\nend'
+         ),
+         [{ name: 'some buffer.bin', data: Buffer('Cats', 'ascii') }]
+      );
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'begin 444 cat.txt\n#0V%T\n`\nend\n' +
+            'foo bar \n' +
+            'begin 444 several cats.txt\n$0V%T<P``\n`\nend' +
+            '\ncats.txt'
+         ),
+         [
+            { name: 'cat.txt', data: Buffer([ 67, 97, 116 ]) },
+            { name: 'several cats.txt', data: Buffer('Cats', 'ascii') }
+         ]
+      );
+      assert.deepEqual(
+         UUE.decodeAllFiles(
+            'begin 444 more cats.txt\n$0V%T<P``\n`\nend'
+         ),
+         [{ name: 'more cats.txt', data: Buffer('Cats', 'ascii') }]
       );
    });
 });
@@ -359,6 +436,113 @@ describe('UUE / text splitter', function(){
             name: 'cats.txt',
             data: Buffer('Cats', 'ascii'),
             source: 'begin 444 cats.txt\n$0V%T<P``\n`\nend',
+            type: 'UUE'
+         }]
+      );
+   });
+
+   it("does the same if a space (instead of a backtick) is used before `end`",
+   function(){
+      assert.deepEqual(
+         UUE.split(
+            'foo bar \n' +
+            'begin 644 buffer.bin\n$0V%T<P``\n \nend'
+         ),
+         [
+            'foo bar \n',
+            {
+               name: 'buffer.bin',
+               data: Buffer('Cats', 'ascii'),
+               source: 'begin 644 buffer.bin\n$0V%T<P``\n \nend',
+               type: 'UUE'
+            }
+         ]
+      );
+      assert.deepEqual(
+         UUE.split(
+            'begin 444 cat.txt\n#0V%T\n \nend\n' +
+            'foo bar \n' +
+            'begin 444 cats.txt\n$0V%T<P``\n \nend' +
+            '\ncats.txt'
+         ),
+         [
+            {
+               name: 'cat.txt',
+               data: Buffer([ 67, 97, 116 ]),
+               source: 'begin 444 cat.txt\n#0V%T\n \nend',
+               type: 'UUE'
+            },
+            '\nfoo bar \n',
+            {
+               name: 'cats.txt',
+               data: Buffer('Cats', 'ascii'),
+               source: 'begin 444 cats.txt\n$0V%T<P``\n \nend',
+               type: 'UUE'
+            },
+            '\ncats.txt'
+         ]
+      );
+      assert.deepEqual(
+         UUE.split(
+            'begin 444 cats.txt\n$0V%T<P``\n \nend'
+         ),
+         [{
+            name: 'cats.txt',
+            data: Buffer('Cats', 'ascii'),
+            source: 'begin 444 cats.txt\n$0V%T<P``\n \nend',
+            type: 'UUE'
+         }]
+      );
+   });
+
+   it("does the same if a whitespace appears in the filename", function(){
+      assert.deepEqual(
+         UUE.split(
+            'foo bar \n' +
+            'begin 644 some buffer.bin\n$0V%T<P``\n`\nend'
+         ),
+         [
+            'foo bar \n',
+            {
+               name: 'some buffer.bin',
+               data: Buffer('Cats', 'ascii'),
+               source: 'begin 644 some buffer.bin\n$0V%T<P``\n`\nend',
+               type: 'UUE'
+            }
+         ]
+      );
+      assert.deepEqual(
+         UUE.split(
+            'begin 444 some cat.txt\n#0V%T\n`\nend\n' +
+            'foo bar \n' +
+            'begin 444 more cats.txt\n$0V%T<P``\n`\nend' +
+            '\ncats.txt'
+         ),
+         [
+            {
+               name: 'some cat.txt',
+               data: Buffer([ 67, 97, 116 ]),
+               source: 'begin 444 some cat.txt\n#0V%T\n`\nend',
+               type: 'UUE'
+            },
+            '\nfoo bar \n',
+            {
+               name: 'more cats.txt',
+               data: Buffer('Cats', 'ascii'),
+               source: 'begin 444 more cats.txt\n$0V%T<P``\n`\nend',
+               type: 'UUE'
+            },
+            '\ncats.txt'
+         ]
+      );
+      assert.deepEqual(
+         UUE.split(
+            'begin 444 several cats.txt\n$0V%T<P``\n`\nend'
+         ),
+         [{
+            name: 'several cats.txt',
+            data: Buffer('Cats', 'ascii'),
+            source: 'begin 444 several cats.txt\n$0V%T<P``\n`\nend',
             type: 'UUE'
          }]
       );
