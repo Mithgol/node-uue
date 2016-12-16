@@ -54,7 +54,7 @@ Lines in the given `text` are expected to be separated by `'\n'` (`\x0A`).
 
 Invalid UUE codes are ignored entirely (even if only one line of some UUE code block is wrong, that code block is not decoded).
 
-Any UUE codes of any file that has a different filename (i.e. not the given `filename`) are ignored. (In other words, even if `text` contains several uuencoded files, it is not necessary for the file with the given `filename` to be first of them: files with other names may precede it, and it still will be found and decoded nevertheless.)
+Any UUE codes of any file that has a different filename (i.e. not the given `filename`) are ignored. (In other words, even if `text` contains several uuencoded files, it is not necessary for the file with the given `filename` to be the first of them: files with other names may precede it, and it still will be found and decoded nevertheless.)
 
 If several uuencoded files have the same `filename` (case-sensitive), only the first is returned (its other namesakes are ignored).
 
@@ -120,7 +120,7 @@ The module **does not** lock any files and **does not** create any “lock 
 
 The tests are not included in the npm package of the module (to keep it small). Use the version from GitHub.
 
-It is necessary to install [Mocha](http://visionmedia.github.io/mocha/) and [JSHint](http://jshint.com/) for testing.
+It is necessary to install [Mocha](https://mochajs.org/) and [JSHint](http://jshint.com/) for testing.
 
 * You may install Mocha globally (`npm install mocha -g`) or locally (`npm install mocha` in the directory of the UUE module).
 
