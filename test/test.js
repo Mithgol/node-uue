@@ -188,6 +188,18 @@ describe('UUE file finder and decoder', function(){
          Buffer('Cats', 'ascii').toString('binary')
       );
    });
+
+   it('decodes it if filename contains special RegEx characters',
+   function(){
+     assert.strictEqual(
+         UUE.decodeFile(
+            'foo bar \n' +
+            'begin 644 FURRYCAT(S.xml\n#0V%T\n \nend\n',
+            'FURRYCAT(S.xml'
+         ).toString('binary'),
+         Buffer('Cat', 'ascii').toString('binary')
+     );
+   });
 });
 
 describe('multiple UUE file finder and decoder', function(){
