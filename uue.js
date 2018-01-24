@@ -155,9 +155,11 @@ UUE.prototype.encode = function(encodeSource, encodeOptions){
 
 UUE.prototype.decodeFile = function(text, filename){
    var matches = [];
+   var escapedFilename = filename
+     .replace(/([.*+?=^!:${}()|[\]\/\\])/g, '\\$1');
    var potentialUUE = RegExp(
       [
-         '^begin [0-7]{3} ' + filename + '\n',
+         '^begin [0-7]{3} ' + escapedFilename + '\n',
          '(',
          '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
          ')',
