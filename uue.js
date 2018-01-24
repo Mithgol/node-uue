@@ -181,7 +181,7 @@ UUE.prototype.decodeFile = function(text, filename){
    if( matches.length === 0 ) return null;
 
    var fileFound = null;
-   matches.forEach(function(nextMatch){
+   matches.forEach(nextMatch => {
       if( fileFound !== null ) return;
 
       if( nextMatch[1].length < 1 ){
@@ -192,7 +192,7 @@ UUE.prototype.decodeFile = function(text, filename){
       var decodingError = false;
       var decoded = nextMatch[1].split('\n');
       decoded.pop(); // cut last \n (it is not a separator)
-      decoded = decoded.map(function(lineUUE){
+      decoded = decoded.map(lineUUE => {
          /* jshint bitwise:false */
          if( decodingError ) return null;
 
@@ -270,11 +270,11 @@ UUE.prototype.decodeAllFiles = function(text){
 
    if( matches.length === 0 ) return [];
 
-   matches.forEach(function(nextMatch){
+   matches.forEach(nextMatch => {
       var nextFilename = nextMatch[1];
-      var idxFilename = allFiles.findIndex(function(nextFile){
-         return nextFile.name === nextFilename;
-      });
+      var idxFilename = allFiles.findIndex(
+         nextFile => nextFile.name === nextFilename
+      );
       if( idxFilename > -1 ) return; // already found, skip it
 
       if( nextMatch[2].length < 1 ){
@@ -288,7 +288,7 @@ UUE.prototype.decodeAllFiles = function(text){
       var decodingError = false;
       var decoded = nextMatch[2].split('\n');
       decoded.pop(); // cut last \n (it is not a separator)
-      decoded = decoded.map(function(lineUUE){
+      decoded = decoded.map(lineUUE => {
          /* jshint bitwise:false */
          if( decodingError ) return null;
 
@@ -355,7 +355,7 @@ UUE.prototype.split = function(text){
       ].join(''),
       'gm'
    );
-   return text.split(potentialUUE).map(function(fragment, idx, arr){
+   return text.split(potentialUUE).map((fragment, idx, arr) => {
       /* jshint indent: false */
       if( idx % 2 === 0 ){ // simple string fragment's index: 0, 2, 4...
          return fragment;
@@ -378,12 +378,12 @@ UUE.prototype.split = function(text){
             );
          }
       }
-   }).filter(function(nextElement){
+   }).filter(nextElement => {
       if( nextElement === '' ) return false;
       if( nextElement === null ) return false;
 
       return true;
-   }).reduce(function(builtArray, nextFragment){
+   }).reduce((builtArray, nextFragment) => {
       if( typeof nextFragment !== 'string' ){
          builtArray.push(nextFragment);
       } else { // typeof nextFragment === 'string'
