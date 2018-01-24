@@ -11,6 +11,7 @@
    "url": "https://github.com/Mithgol/node-uue.git"
 },
 "dependencies": {
+   "escape-string-regexp": "~1.0.5",
    "extend": "~3.0.0"
 },
 "scripts": {
