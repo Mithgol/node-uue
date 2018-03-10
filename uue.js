@@ -222,14 +222,18 @@ UUE.prototype.decodeFile = function(text, filename){
             total +=  (lineUUE.charCodeAt(stringOffset) - 32) % 64;
             stringOffset++;
 
-            // noAssert === true:
-            // silently apply &0xFF mask, silently drop after byteLength
-            targetBuffer.writeUInt8( total >>> 16, bufferOffset, true );
+            targetBuffer.writeUInt8( total >>> 16, bufferOffset );
             bufferOffset++;
-            targetBuffer.writeUInt8( total >>> 8, bufferOffset, true );
+            if (bufferOffset === targetBuffer.length)
+              break;
+            targetBuffer.writeUInt8( (total >>> 8) & 0xFF, bufferOffset );
             bufferOffset++;
-            targetBuffer.writeUInt8( total, bufferOffset, true );
+            if (bufferOffset === targetBuffer.length)
+              break;
+            targetBuffer.writeUInt8( total & 0xFF, bufferOffset );
             bufferOffset++;
+            if (bufferOffset === targetBuffer.length)
+              break;
          }
          return targetBuffer;
       });
@@ -318,14 +322,18 @@ UUE.prototype.decodeAllFiles = function(text){
             total +=  (lineUUE.charCodeAt(stringOffset) - 32) % 64;
             stringOffset++;
 
-            // noAssert === true:
-            // silently apply &0xFF mask, silently drop after byteLength
-            targetBuffer.writeUInt8( total >>> 16, bufferOffset, true );
+            targetBuffer.writeUInt8( total >>> 16, bufferOffset );
             bufferOffset++;
-            targetBuffer.writeUInt8( total >>> 8, bufferOffset, true );
+            if (bufferOffset === targetBuffer.length)
+              break;
+            targetBuffer.writeUInt8( (total >>> 8) & 0xFF, bufferOffset );
             bufferOffset++;
-            targetBuffer.writeUInt8( total, bufferOffset, true );
+            if (bufferOffset === targetBuffer.length)
+              break;
+            targetBuffer.writeUInt8( total & 0xFF, bufferOffset );
             bufferOffset++;
+            if (bufferOffset === targetBuffer.length)
+              break;
          }
          return targetBuffer;
       });
