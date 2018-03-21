@@ -224,16 +224,13 @@ UUE.prototype.decodeFile = function(text, filename){
 
             targetBuffer.writeUInt8( total >>> 16, bufferOffset );
             bufferOffset++;
-            if (bufferOffset === targetBuffer.length)
-              break;
+            if (bufferOffset >= byteLength) break;
             targetBuffer.writeUInt8( (total >>> 8) & 0xFF, bufferOffset );
             bufferOffset++;
-            if (bufferOffset === targetBuffer.length)
-              break;
+            if (bufferOffset >= byteLength) break;
             targetBuffer.writeUInt8( total & 0xFF, bufferOffset );
             bufferOffset++;
-            if (bufferOffset === targetBuffer.length)
-              break;
+            if (bufferOffset >= byteLength) break;
          }
          return targetBuffer;
       });
@@ -324,16 +321,13 @@ UUE.prototype.decodeAllFiles = function(text){
 
             targetBuffer.writeUInt8( total >>> 16, bufferOffset );
             bufferOffset++;
-            if (bufferOffset === targetBuffer.length)
-              break;
+            if (bufferOffset >= byteLength) break;
             targetBuffer.writeUInt8( (total >>> 8) & 0xFF, bufferOffset );
             bufferOffset++;
-            if (bufferOffset === targetBuffer.length)
-              break;
+            if (bufferOffset >= byteLength) break;
             targetBuffer.writeUInt8( total & 0xFF, bufferOffset );
             bufferOffset++;
-            if (bufferOffset === targetBuffer.length)
-              break;
+            if (bufferOffset >= byteLength) break;
          }
          return targetBuffer;
       });
