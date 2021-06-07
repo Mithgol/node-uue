@@ -1,6 +1,7 @@
 /* global describe, it */
 var assert = require('assert');
 var path = require('path');
+var fs = require('fs');
 var UUE = require('../');
 
 describe('UUE encoder', function(){
@@ -200,6 +201,24 @@ describe('UUE file finder and decoder', function(){
          Buffer.from('Cat', 'ascii').toString('binary')
       );
    });
+
+   it("decodes 'apple' buffer", function(){
+      var file = path.join(__dirname, './aapl-20200926_g1.jpg.uue');
+      var encoded = fs.readFileSync(file).toString();
+      var actualDecoded = UUE.decodeFile(encoded, 'aapl-20200926_g1.jpg');
+
+      var expectedDecodedFile = path.join(
+         __dirname,
+         './aapl-20200926_g1.jpg'
+      );
+      var expectedDecoded = fs.readFileSync(expectedDecodedFile);
+
+      assert.strictEqual(
+         actualDecoded.toString('binary'),
+         expectedDecoded.toString('binary')
+      );
+   });
+
 });
 
 describe('multiple UUE file finder and decoder', function(){
