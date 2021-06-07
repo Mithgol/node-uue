@@ -185,7 +185,7 @@ UUE.prototype.decodeFile = function(text, filename){
       if( fileFound !== null ) return;
 
       if( nextMatch[1].length < 1 ){
-         fileFound = new Buffer(0);
+         fileFound = Buffer.alloc(0);
          return;
       }
 
@@ -197,7 +197,7 @@ UUE.prototype.decodeFile = function(text, filename){
          if( decodingError ) return null;
 
          var byteLength = (lineUUE.charCodeAt(0) - 32) % 64;
-         if( byteLength === 0 ) return new Buffer(0);
+         if( byteLength === 0 ) return Buffer.alloc(0);
 
          var charLength = ( (byteLength / 3) |0 ) * 4;
          if( byteLength % 3 !== 0 ) charLength += 4;
@@ -205,7 +205,7 @@ UUE.prototype.decodeFile = function(text, filename){
             decodingError = true;
             return null;
          }
-         var targetBuffer = new Buffer(byteLength);
+         var targetBuffer = Buffer.alloc(byteLength);
 
          var step, total;
          var stringOffset = 1;
@@ -281,7 +281,7 @@ UUE.prototype.decodeAllFiles = function(text){
       if( nextMatch[2].length < 1 ){
          allFiles.push({
             name: nextFilename,
-            data: new Buffer(0)
+            data: Buffer.alloc(0)
          });
          return;
       }
@@ -294,7 +294,7 @@ UUE.prototype.decodeAllFiles = function(text){
          if( decodingError ) return null;
 
          var byteLength = (lineUUE.charCodeAt(0) - 32) % 64;
-         if( byteLength === 0 ) return new Buffer(0);
+         if( byteLength === 0 ) return Buffer.alloc(0);
 
          var charLength = ( (byteLength / 3) |0 ) * 4;
          if( byteLength % 3 !== 0 ) charLength += 4;
@@ -302,7 +302,7 @@ UUE.prototype.decodeAllFiles = function(text){
             decodingError = true;
             return null;
          }
-         var targetBuffer = new Buffer(byteLength);
+         var targetBuffer = Buffer.alloc(byteLength);
 
          var step, total;
          var stringOffset = 1;

@@ -6,11 +6,11 @@ var UUE = require('../');
 describe('UUE encoder', function(){
    it('encodes empty buffer, can use whitespaces in its filename', function(){
       assert.strictEqual(
-         UUE.encode(Buffer([ ])),
+         UUE.encode(Buffer.from([ ])),
          'begin 644 buffer.bin\n`\nend'
       );
       assert.strictEqual(
-         UUE.encode(Buffer([ ]), {
+         UUE.encode(Buffer.from([ ]), {
             mode: '444',
             filename: "empty file's name.ext"
          }),
@@ -20,11 +20,11 @@ describe('UUE encoder', function(){
 
    it("encodes 'Cat' buffer, can use whitespaces in its filename", function(){
       assert.strictEqual(
-         UUE.encode(Buffer([ 67, 97, 116 ])),
+         UUE.encode(Buffer.from([ 67, 97, 116 ])),
          'begin 644 buffer.bin\n#0V%T\n`\nend'
       );
       assert.strictEqual(
-         UUE.encode(Buffer([ 67, 97, 116 ]), {
+         UUE.encode(Buffer.from([ 67, 97, 116 ]), {
             mode: '444',
             filename: "cat's file name.ext"
          }),
@@ -41,11 +41,11 @@ describe('UUE encoder', function(){
    it("encodes 'Cats' buffer, also can use whitespaces in its filename",
    function(){
       assert.strictEqual(
-         UUE.encode(Buffer('Cats', 'ascii')),
+         UUE.encode(Buffer.from('Cats', 'ascii')),
          'begin 644 buffer.bin\n$0V%T<P``\n`\nend'
       );
       assert.strictEqual(
-         UUE.encode(Buffer('Cats', 'ascii'), {
+         UUE.encode(Buffer.from('Cats', 'ascii'), {
             mode: '444',
             filename: "cats' file name.ext"
          }),
@@ -78,14 +78,14 @@ describe('UUE file finder and decoder', function(){
             'begin 644 buffer.bin\n`\nend',
             'buffer.bin'
          ).toString('binary'),
-         Buffer(0).toString('binary')
+         Buffer.alloc(0).toString('binary')
       );
       assert.strictEqual(
          UUE.decodeFile(
             'begin 444 filename.ext\n`\n`\n`\nend',
             'filename.ext'
          ).toString('binary'),
-         Buffer(0).toString('binary')
+         Buffer.alloc(0).toString('binary')
       );
    });
 
@@ -95,14 +95,14 @@ describe('UUE file finder and decoder', function(){
             'begin 644 buffer.bin\n#0V%T\n`\nend',
             'buffer.bin'
          ).toString('binary'),
-         Buffer([ 67, 97, 116 ]).toString('binary')
+         Buffer.from([ 67, 97, 116 ]).toString('binary')
       );
       assert.strictEqual(
          UUE.decodeFile(
             'begin 444 cat.txt\n#0V%T\n`\nend',
             'cat.txt'
          ).toString('binary'),
-         Buffer([ 67, 97, 116 ]).toString('binary')
+         Buffer.from([ 67, 97, 116 ]).toString('binary')
       );
       assert.strictEqual(
          UUE.decodeFile(
@@ -121,7 +121,7 @@ describe('UUE file finder and decoder', function(){
             'begin 644 buffer.bin\n$0V%T<P``\n`\nend',
             'buffer.bin'
          ).toString('binary'),
-         Buffer('Cats', 'ascii').toString('binary')
+         Buffer.from('Cats', 'ascii').toString('binary')
       );
       assert.strictEqual(
          UUE.decodeFile(
@@ -130,7 +130,7 @@ describe('UUE file finder and decoder', function(){
             'begin 444 cats.txt\n$0V%T<P``\n`\nend',
             'cats.txt'
          ).toString('binary'),
-         Buffer('Cats', 'ascii').toString('binary')
+         Buffer.from('Cats', 'ascii').toString('binary')
       );
       assert.strictEqual(
          UUE.decodeFile(
@@ -149,7 +149,7 @@ describe('UUE file finder and decoder', function(){
             'begin 644 buffer.bin\n$0V%T<P``\n \nend',
             'buffer.bin'
          ).toString('binary'),
-         Buffer('Cats', 'ascii').toString('binary')
+         Buffer.from('Cats', 'ascii').toString('binary')
       );
       assert.strictEqual(
          UUE.decodeFile(
@@ -158,7 +158,7 @@ describe('UUE file finder and decoder', function(){
             'begin 444 cats.txt\n$0V%T<P``\n \nend',
             'cats.txt'
          ).toString('binary'),
-         Buffer('Cats', 'ascii').toString('binary')
+         Buffer.from('Cats', 'ascii').toString('binary')
       );
       assert.strictEqual(
          UUE.decodeFile(
@@ -176,7 +176,7 @@ describe('UUE file finder and decoder', function(){
             'begin 644 some buffer.bin\n$0V%T<P``\n`\nend',
             'some buffer.bin'
          ).toString('binary'),
-         Buffer('Cats', 'ascii').toString('binary')
+         Buffer.from('Cats', 'ascii').toString('binary')
       );
       assert.strictEqual(
          UUE.decodeFile(
@@ -185,7 +185,7 @@ describe('UUE file finder and decoder', function(){
             'begin 444 several cats.txt\n$0V%T<P``\n`\nend',
             'several cats.txt'
          ).toString('binary'),
-         Buffer('Cats', 'ascii').toString('binary')
+         Buffer.from('Cats', 'ascii').toString('binary')
       );
    });
 
@@ -197,7 +197,7 @@ describe('UUE file finder and decoder', function(){
             'begin 644 FURRYCAT(S.xml\n#0V%T\n \nend\n',
             'FURRYCAT(S.xml'
          ).toString('binary'),
-         Buffer('Cat', 'ascii').toString('binary')
+         Buffer.from('Cat', 'ascii').toString('binary')
       );
    });
 });
@@ -218,13 +218,13 @@ describe('multiple UUE file finder and decoder', function(){
          UUE.decodeAllFiles(
             'begin 644 buffer.bin\n`\nend'
          ),
-         [{ name: 'buffer.bin', data: Buffer(0) }]
+         [{ name: 'buffer.bin', data: Buffer.alloc(0) }]
       );
       assert.deepEqual(
          UUE.decodeAllFiles(
             'begin 444 filename.ext\n`\n`\n`\nend'
          ),
-         [{ name: 'filename.ext', data: Buffer(0) }]
+         [{ name: 'filename.ext', data: Buffer.alloc(0) }]
       );
    });
 
@@ -233,13 +233,13 @@ describe('multiple UUE file finder and decoder', function(){
          UUE.decodeAllFiles(
             'begin 644 buffer.bin\n#0V%T\n`\nend'
          ),
-         [{ name: 'buffer.bin', data: Buffer([ 67, 97, 116 ]) }]
+         [{ name: 'buffer.bin', data: Buffer.from([ 67, 97, 116 ]) }]
       );
       assert.deepEqual(
          UUE.decodeAllFiles(
             'begin 444 cat.txt\n#0V%T\n`\nend'
          ),
-         [{ name: 'cat.txt', data: Buffer([ 67, 97, 116 ]) }]
+         [{ name: 'cat.txt', data: Buffer.from([ 67, 97, 116 ]) }]
       );
    });
 
@@ -249,7 +249,7 @@ describe('multiple UUE file finder and decoder', function(){
             'foo bar \n' +
             'begin 644 buffer.bin\n$0V%T<P``\n`\nend'
          ),
-         [{ name: 'buffer.bin', data: Buffer('Cats', 'ascii') }]
+         [{ name: 'buffer.bin', data: Buffer.from('Cats', 'ascii') }]
       );
       assert.deepEqual(
          UUE.decodeAllFiles(
@@ -259,15 +259,15 @@ describe('multiple UUE file finder and decoder', function(){
             '\ncats.txt'
          ),
          [
-            { name: 'cat.txt', data: Buffer([ 67, 97, 116 ]) },
-            { name: 'cats.txt', data: Buffer('Cats', 'ascii') }
+            { name: 'cat.txt', data: Buffer.from([ 67, 97, 116 ]) },
+            { name: 'cats.txt', data: Buffer.from('Cats', 'ascii') }
          ]
       );
       assert.deepEqual(
          UUE.decodeAllFiles(
             'begin 444 cats.txt\n$0V%T<P``\n`\nend'
          ),
-         [{ name: 'cats.txt', data: Buffer('Cats', 'ascii') }]
+         [{ name: 'cats.txt', data: Buffer.from('Cats', 'ascii') }]
       );
    });
 
@@ -278,7 +278,7 @@ describe('multiple UUE file finder and decoder', function(){
             'foo bar \n' +
             'begin 644 buffer.bin\n$0V%T<P``\n \nend'
          ),
-         [{ name: 'buffer.bin', data: Buffer('Cats', 'ascii') }]
+         [{ name: 'buffer.bin', data: Buffer.from('Cats', 'ascii') }]
       );
       assert.deepEqual(
          UUE.decodeAllFiles(
@@ -288,15 +288,15 @@ describe('multiple UUE file finder and decoder', function(){
             '\ncats.txt'
          ),
          [
-            { name: 'cat.txt', data: Buffer([ 67, 97, 116 ]) },
-            { name: 'cats.txt', data: Buffer('Cats', 'ascii') }
+            { name: 'cat.txt', data: Buffer.from([ 67, 97, 116 ]) },
+            { name: 'cats.txt', data: Buffer.from('Cats', 'ascii') }
          ]
       );
       assert.deepEqual(
          UUE.decodeAllFiles(
             'begin 444 cats.txt\n$0V%T<P``\n \nend'
          ),
-         [{ name: 'cats.txt', data: Buffer('Cats', 'ascii') }]
+         [{ name: 'cats.txt', data: Buffer.from('Cats', 'ascii') }]
       );
    });
 
@@ -306,7 +306,7 @@ describe('multiple UUE file finder and decoder', function(){
             'foo bar \n' +
             'begin 644 some buffer.bin\n$0V%T<P``\n`\nend'
          ),
-         [{ name: 'some buffer.bin', data: Buffer('Cats', 'ascii') }]
+         [{ name: 'some buffer.bin', data: Buffer.from('Cats', 'ascii') }]
       );
       assert.deepEqual(
          UUE.decodeAllFiles(
@@ -316,15 +316,15 @@ describe('multiple UUE file finder and decoder', function(){
             '\ncats.txt'
          ),
          [
-            { name: 'cat.txt', data: Buffer([ 67, 97, 116 ]) },
-            { name: 'several cats.txt', data: Buffer('Cats', 'ascii') }
+            { name: 'cat.txt', data: Buffer.from([ 67, 97, 116 ]) },
+            { name: 'several cats.txt', data: Buffer.from('Cats', 'ascii') }
          ]
       );
       assert.deepEqual(
          UUE.decodeAllFiles(
             'begin 444 more cats.txt\n$0V%T<P``\n`\nend'
          ),
-         [{ name: 'more cats.txt', data: Buffer('Cats', 'ascii') }]
+         [{ name: 'more cats.txt', data: Buffer.from('Cats', 'ascii') }]
       );
    });
 });
@@ -357,7 +357,7 @@ describe('UUE / text splitter', function(){
          ),
          [{
             name: 'buffer.bin',
-            data: Buffer(0),
+            data: Buffer.alloc(0),
             source: 'begin 644 buffer.bin\n`\nend',
             type: 'UUE'
          }]
@@ -368,7 +368,7 @@ describe('UUE / text splitter', function(){
          ),
          [{
             name: 'filename.ext',
-            data: Buffer(0),
+            data: Buffer.alloc(0),
             source: 'begin 444 filename.ext\n`\n`\n`\nend',
             type: 'UUE'
          }]
@@ -382,7 +382,7 @@ describe('UUE / text splitter', function(){
          ),
          [{
             name: 'buffer.bin',
-            data: Buffer([ 67, 97, 116 ]),
+            data: Buffer.from([ 67, 97, 116 ]),
             source: 'begin 644 buffer.bin\n#0V%T\n`\nend',
             type: 'UUE'
          }]
@@ -393,7 +393,7 @@ describe('UUE / text splitter', function(){
          ),
          [{
             name: 'cat.txt',
-            data: Buffer([ 67, 97, 116 ]),
+            data: Buffer.from([ 67, 97, 116 ]),
             source: 'begin 444 cat.txt\n#0V%T\n`\nend',
             type: 'UUE'
          }]
@@ -410,7 +410,7 @@ describe('UUE / text splitter', function(){
             'foo bar \n',
             {
                name: 'buffer.bin',
-               data: Buffer('Cats', 'ascii'),
+               data: Buffer.from('Cats', 'ascii'),
                source: 'begin 644 buffer.bin\n$0V%T<P``\n`\nend',
                type: 'UUE'
             }
@@ -426,14 +426,14 @@ describe('UUE / text splitter', function(){
          [
             {
                name: 'cat.txt',
-               data: Buffer([ 67, 97, 116 ]),
+               data: Buffer.from([ 67, 97, 116 ]),
                source: 'begin 444 cat.txt\n#0V%T\n`\nend',
                type: 'UUE'
             },
             '\nfoo bar \n',
             {
                name: 'cats.txt',
-               data: Buffer('Cats', 'ascii'),
+               data: Buffer.from('Cats', 'ascii'),
                source: 'begin 444 cats.txt\n$0V%T<P``\n`\nend',
                type: 'UUE'
             },
@@ -446,7 +446,7 @@ describe('UUE / text splitter', function(){
          ),
          [{
             name: 'cats.txt',
-            data: Buffer('Cats', 'ascii'),
+            data: Buffer.from('Cats', 'ascii'),
             source: 'begin 444 cats.txt\n$0V%T<P``\n`\nend',
             type: 'UUE'
          }]
@@ -464,7 +464,7 @@ describe('UUE / text splitter', function(){
             'foo bar \n',
             {
                name: 'buffer.bin',
-               data: Buffer('Cats', 'ascii'),
+               data: Buffer.from('Cats', 'ascii'),
                source: 'begin 644 buffer.bin\n$0V%T<P``\n \nend',
                type: 'UUE'
             }
@@ -480,14 +480,14 @@ describe('UUE / text splitter', function(){
          [
             {
                name: 'cat.txt',
-               data: Buffer([ 67, 97, 116 ]),
+               data: Buffer.from([ 67, 97, 116 ]),
                source: 'begin 444 cat.txt\n#0V%T\n \nend',
                type: 'UUE'
             },
             '\nfoo bar \n',
             {
                name: 'cats.txt',
-               data: Buffer('Cats', 'ascii'),
+               data: Buffer.from('Cats', 'ascii'),
                source: 'begin 444 cats.txt\n$0V%T<P``\n \nend',
                type: 'UUE'
             },
@@ -500,7 +500,7 @@ describe('UUE / text splitter', function(){
          ),
          [{
             name: 'cats.txt',
-            data: Buffer('Cats', 'ascii'),
+            data: Buffer.from('Cats', 'ascii'),
             source: 'begin 444 cats.txt\n$0V%T<P``\n \nend',
             type: 'UUE'
          }]
@@ -517,7 +517,7 @@ describe('UUE / text splitter', function(){
             'foo bar \n',
             {
                name: 'some buffer.bin',
-               data: Buffer('Cats', 'ascii'),
+               data: Buffer.from('Cats', 'ascii'),
                source: 'begin 644 some buffer.bin\n$0V%T<P``\n`\nend',
                type: 'UUE'
             }
@@ -533,14 +533,14 @@ describe('UUE / text splitter', function(){
          [
             {
                name: 'some cat.txt',
-               data: Buffer([ 67, 97, 116 ]),
+               data: Buffer.from([ 67, 97, 116 ]),
                source: 'begin 444 some cat.txt\n#0V%T\n`\nend',
                type: 'UUE'
             },
             '\nfoo bar \n',
             {
                name: 'more cats.txt',
-               data: Buffer('Cats', 'ascii'),
+               data: Buffer.from('Cats', 'ascii'),
                source: 'begin 444 more cats.txt\n$0V%T<P``\n`\nend',
                type: 'UUE'
             },
@@ -553,7 +553,7 @@ describe('UUE / text splitter', function(){
          ),
          [{
             name: 'several cats.txt',
-            data: Buffer('Cats', 'ascii'),
+            data: Buffer.from('Cats', 'ascii'),
             source: 'begin 444 several cats.txt\n$0V%T<P``\n`\nend',
             type: 'UUE'
          }]
