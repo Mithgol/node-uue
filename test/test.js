@@ -202,6 +202,25 @@ describe('UUE file finder and decoder', function(){
       );
    });
 
+   it("decodes 'apple' buffer malformed", function(){
+      var file = path.join(__dirname, './aapl-20200926_g1.jpg.malformed_uue');
+      var encoded = fs.readFileSync(file).toString();
+      var actualDecoded = UUE.decodeFile(encoded, 'aapl-20200926_g1.jpg');
+
+      var expectedDecodedFile = path.join(
+         __dirname,
+         './aapl-20200926_g1.jpg'
+      );
+      var expectedDecoded = fs.readFileSync(expectedDecodedFile);
+
+      // fs.writeFileSync('tmp_malformed.jpg', actualDecoded);
+
+      assert.strictEqual(
+         actualDecoded.toString('binary'),
+         expectedDecoded.toString('binary')
+      );
+   });
+
    it("decodes 'apple' buffer", function(){
       var file = path.join(__dirname, './aapl-20200926_g1.jpg.uue');
       var encoded = fs.readFileSync(file).toString();

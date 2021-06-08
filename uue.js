@@ -204,7 +204,6 @@ UUE.prototype.decodeFile = function(text, filename){
       decoded.pop(); // cut last \n (it is not a separator)
       decoded = decoded.map(lineUUE => {
 
-
          /* jshint bitwise:false */
          if( decodingError ) return null;
 
@@ -234,21 +233,33 @@ UUE.prototype.decodeFile = function(text, filename){
 
          // # of chars + 1 count byte + 1 newline
          // max length is 62: 1 count byte + 60 chars + 1 newline
-         if (/\n/.test(lineUUE) &&
-            charLength + 1 + 1 !== lineUUE.length) {
-            //console.log(`"${lineUUE}" ...`);
-            // <byte count><chars>\n
-            lineUUE = lineUUE.slice(0, -1)
-               .padEnd(charLength + 1)
-               .padEnd(charLength + 2, "\n");
-            //console.log(`  --> "${lineUUE}"`);
+
+         var hasCorrectLength = lineUUE.length === charLength + 1 + 1;
+         if (!hasCorrectLength) {
+            //console.log('  attempting to fix line length');
+            var hasNewline = /\n$/.test(lineUUE);
+
+            // cut off ending newline
+            if (hasNewline) {
+               lineUUE = lineUUE.slice(0, -1);
+            }
+
+            // pad line with spaces to achieve correct length
+            lineUUE = lineUUE.padEnd(charLength + 1, ' ');
+
+            // add newline back
+            if (hasNewline) {
+               lineUUE = `${lineUUE}\n`;
+            }
+
+            //console.log(`    new line length is ${lineUUE.length}`);
          }
 
          // Sanity check: 1 count char + n data chars
          // should not be > entire line
          if( 1 + charLength > lineUUE.length ){
-            //console.log(`${charLength} !== ${lineUUE.length}`);
-            //console.log('got decoding error!');
+            console.log(`${charLength} !== ${lineUUE.length}`);
+            console.log('got decoding error!');
             decodingError = true;
             return null;
          }
