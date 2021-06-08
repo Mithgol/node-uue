@@ -234,6 +234,12 @@ UUE.prototype.decodeFile = function(text, filename){
          // # of chars + 1 count byte + 1 newline
          // max length is 62: 1 count byte + 60 chars + 1 newline
 
+         // Some uuencoded text is saved via a mechanism that strips
+         // trailing ' ' characters from each line of data (e.g., a
+         // text editor or some kind of text post-processor). Stripping
+         // the trailing ' ' characters corrupts the uuencoded text.
+         // Here, we try to fix those corrupted lines by adding back
+         // the trailing ' ' characters.
          var hasCorrectLength = lineUUE.length === charLength + 1 + 1;
          if (!hasCorrectLength) {
             //console.log('  attempting to fix line length');
