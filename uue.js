@@ -155,6 +155,9 @@ UUE.prototype.encode = function(encodeSource, encodeOptions){
 };
 
 UUE.prototype.decodeFile = function(text, filename){
+   //console.log(`looking for ${filename} in...`);
+   //console.log(text);
+
    var matches = [];
    var potentialUUE = RegExp(
       [
@@ -168,15 +171,21 @@ UUE.prototype.decodeFile = function(text, filename){
       'gm'
    );
 
+   //console.log(potentialUUE);
+
    var continueSearch = true;
    do {
       var nextMatch = potentialUUE.exec(text);
+      //console.log('test', potentialUUE.test(text));
+      //console.log('nextMatch ', potentialUUE.exec(text));
       if( nextMatch === null ){
          continueSearch = false;
       } else {
          matches.push(nextMatch);
       }
    } while( continueSearch );
+
+   //console.log(`matches.length == ${matches.length}`);
 
    if( matches.length === 0 ) return null;
 
@@ -191,17 +200,55 @@ UUE.prototype.decodeFile = function(text, filename){
 
       var decodingError = false;
       var decoded = nextMatch[1].split('\n');
+      //console.log('FOO', JSON.stringify(decoded, null, 2));
       decoded.pop(); // cut last \n (it is not a separator)
       decoded = decoded.map(lineUUE => {
+
+
          /* jshint bitwise:false */
          if( decodingError ) return null;
 
+         //console.log(`checking ${lineUUE}`);
+
+         // Number of bytes in the line.
          var byteLength = (lineUUE.charCodeAt(0) - 32) % 64;
+
+         //console.log(`  byteLength = ${byteLength}`);
          if( byteLength === 0 ) return Buffer.alloc(0);
 
+         // Number of characters: 3 bytes --> 4 characters
+         // Note the '|0' truncates the fractional part.
          var charLength = ( (byteLength / 3) |0 ) * 4;
+
+         // Adjust for the last line.
+         // The last line of the encoded data may not have
+         // an exactly divisible-by-3 number of bytes. If
+         // there are extra bytes left, pad by four chars
+         // to accommodate padding bytes. (e.g., an extra
+         // 1 byte will be padded by 2 padding bytes to
+         // ensure we are able to output 4 encoded characters)
          if( byteLength % 3 !== 0 ) charLength += 4;
+
+         //console.log(`  charLength = ${charLength}`);
+         //console.log(`  lineUUE.length = ${lineUUE.length}`);
+
+         // # of chars + 1 count byte + 1 newline
+         // max length is 62: 1 count byte + 60 chars + 1 newline
+         if (/\n/.test(lineUUE) &&
+            charLength + 1 + 1 !== lineUUE.length) {
+            //console.log(`"${lineUUE}" ...`);
+            // <byte count><chars>\n
+            lineUUE = lineUUE.slice(0, -1)
+               .padEnd(charLength + 1)
+               .padEnd(charLength + 2, "\n");
+            //console.log(`  --> "${lineUUE}"`);
+         }
+
+         // Sanity check: 1 count char + n data chars
+         // should not be > entire line
          if( 1 + charLength > lineUUE.length ){
+            //console.log(`${charLength} !== ${lineUUE.length}`);
+            //console.log('got decoding error!');
             decodingError = true;
             return null;
          }

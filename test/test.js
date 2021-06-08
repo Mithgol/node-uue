@@ -213,6 +213,8 @@ describe('UUE file finder and decoder', function(){
       );
       var expectedDecoded = fs.readFileSync(expectedDecodedFile);
 
+      // fs.writeFileSync('tmp.jpg', actualDecoded);
+
       assert.strictEqual(
          actualDecoded.toString('binary'),
          expectedDecoded.toString('binary')
