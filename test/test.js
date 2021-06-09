@@ -201,7 +201,6 @@ describe('UUE file finder and decoder', function(){
          Buffer.from('Cat', 'ascii').toString('binary')
       );
    });
-
 });
 
 describe('multiple UUE file finder and decoder', function(){
@@ -563,103 +562,57 @@ describe('UUE / text splitter', function(){
    });
 });
 
-describe('Real world examples', function(){
-   it("decodes 'apple' buffer malformed", function(){
-      var file = path.join(__dirname, './aapl-20200926_g1.jpg.malformed_uue');
-      var encoded = fs.readFileSync(file).toString();
-      var actualDecoded = UUE.decodeFile(encoded, 'aapl-20200926_g1.jpg');
+describe('Real world example: XBRL', function(){
+   describe('UUE file finder and decoder', function(){
+      it("decodes a file with missing trailing spaces", function(){
+         var basename = 'aapl-20200926_g1.jpg';
+         var file = path.join(__dirname, `xbrl/${basename}.malformed_uue`);
+         var encoded = fs.readFileSync(file).toString();
+         var actualDecoded = UUE.decodeFile(encoded, basename);
 
-      var expectedDecodedFile = path.join(
-         __dirname,
-         './aapl-20200926_g1.jpg'
-      );
-      var expectedDecoded = fs.readFileSync(expectedDecodedFile);
+         var expectedDecodedFile = path.join(__dirname, `xbrl/${basename}`);
+         var expectedDecoded = fs.readFileSync(expectedDecodedFile);
 
-      // fs.writeFileSync('tmp_malformed.jpg', actualDecoded);
+         assert.strictEqual(
+            actualDecoded.toString('binary'),
+            expectedDecoded.toString('binary')
+         );
+      });
 
-      assert.strictEqual(
-         actualDecoded.toString('binary'),
-         expectedDecoded.toString('binary')
-      );
+      it("decodes multiline text (jpg file)", function(){
+         var basename = 'aapl-20200926_g2.jpg';
+         var file = path.join(__dirname, `xbrl/${basename}.uue`);
+         var encoded = fs.readFileSync(file).toString();
+         var actualDecoded = UUE.decodeFile(encoded, basename);
+
+         var expectedDecodedFile = path.join(__dirname, `xbrl/${basename}`);
+         var expectedDecoded = fs.readFileSync(expectedDecodedFile);
+
+         assert.strictEqual(
+            actualDecoded.toString('binary'),
+            expectedDecoded.toString('binary')
+         );
+      });
+
+      it("decodes multiline text (zip file)", function(){
+         var basename = '0000320193-20-000096-xbrl.zip';
+         var file = path.join(__dirname, `xbrl/${basename}.uue`);
+         var encoded = fs.readFileSync(file).toString();
+         var actualDecoded = UUE.decodeFile(encoded, basename);
+
+         var expectedDecodedFile = path.join(__dirname, `xbrl/${basename}`);
+         var expectedDecoded = fs.readFileSync(expectedDecodedFile);
+
+         assert.strictEqual(
+            actualDecoded.toString('binary'),
+            expectedDecoded.toString('binary')
+         );
+      });
    });
 
-   it("decodes 'apple' buffer", function(){
-      var file = path.join(__dirname, './aapl-20200926_g1.jpg.uue');
-      var encoded = fs.readFileSync(file).toString();
-      var actualDecoded = UUE.decodeFile(encoded, 'aapl-20200926_g1.jpg');
-
-      var expectedDecodedFile = path.join(
-         __dirname,
-         './aapl-20200926_g1.jpg'
-      );
-      var expectedDecoded = fs.readFileSync(expectedDecodedFile);
-
-      // fs.writeFileSync('tmp.jpg', actualDecoded);
-
-      assert.strictEqual(
-         actualDecoded.toString('binary'),
-         expectedDecoded.toString('binary')
-      );
-   });
-
-   it("decodes 'apple g2' buffer malformed", function(){
-      var file = path.join(__dirname, './aapl-20200926_g2.jpg.uue');
-      var encoded = fs.readFileSync(file).toString();
-      var actualDecoded = UUE.decodeFile(encoded, 'aapl-20200926_g2.jpg');
-
-      //fs.writeFileSync('tmp.jpg', actualDecoded);
-
-      var expectedDecodedFile = path.join(
-         __dirname,
-         './aapl-20200926_g2.jpg'
-      );
-      var expectedDecoded = fs.readFileSync(expectedDecodedFile);
-
-      assert.strictEqual(
-         actualDecoded.toString('binary'),
-         expectedDecoded.toString('binary')
-      );
-   });
-
-   it("decodes 'apple zip' buffer malformed", function(){
-      var file = path.join(__dirname, './0000320193-20-000096-xbrl.zip.uue');
-      var encoded = fs.readFileSync(file).toString();
-      var actualDecoded = UUE.decodeFile(encoded,
-         '0000320193-20-000096-xbrl.zip');
-
-      //fs.writeFileSync('tmp.jpg', actualDecoded);
-
-      var expectedDecodedFile = path.join(
-         __dirname,
-         './0000320193-20-000096-xbrl.zip'
-      );
-      var expectedDecoded = fs.readFileSync(expectedDecodedFile);
-
-      assert.strictEqual(
-         actualDecoded.toString('binary'),
-         expectedDecoded.toString('binary')
-      );
-   });
-
-   it("decodes 'apple' txt", function(){
-      var file = path.join(__dirname, './0000320193-20-000096.txt');
-      var encoded = fs.readFileSync(file).toString();
-      var actualDecoded = UUE.decodeAllFiles(encoded);
-
-      for (const decoded of actualDecoded) {
-         console.log(decoded.name);
-      }
-      //fs.writeFileSync('tmp.jpg', actualDecoded);
-
-      //var expectedDecodedFile = path.join(
-      //   __dirname,
-      //   './0000320193-20-000096-xbrl.zip'
-      //);
-      //var expectedDecoded = fs.readFileSync(expectedDecodedFile);
-
-      //assert.strictEqual(
-      //   actualDecoded.toString('binary'),
-      //   expectedDecoded.toString('binary')
-      //);
+   describe('multiple UUE file finder and decoder', function(){
+      it("decodes a file containing multiple encoded text blocks", function(){
+         assert.fail('implement me');
+      });
    });
 });
