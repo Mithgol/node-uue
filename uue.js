@@ -155,6 +155,9 @@ UUE.prototype.encode = function(encodeSource, encodeOptions){
 };
 
 UUE.prototype.decodeFile = function(text, filename){
+   //console.log(`looking for ${filename} in...`);
+   //console.log(text);
+
    var matches = [];
    var potentialUUE = RegExp(
       [
@@ -162,21 +165,27 @@ UUE.prototype.decodeFile = function(text, filename){
          '(',
          '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
          ')',
-         '(?:`| )\n',
+         '(?:`| )?\n', // allow an empty line as well
          'end$'
       ].join(''),
       'gm'
    );
 
+   //console.log(potentialUUE);
+
    var continueSearch = true;
    do {
       var nextMatch = potentialUUE.exec(text);
+      //console.log('test', potentialUUE.test(text));
+      //console.log('nextMatch ', potentialUUE.exec(text));
       if( nextMatch === null ){
          continueSearch = false;
       } else {
          matches.push(nextMatch);
       }
    } while( continueSearch );
+
+   //console.log(`matches.length == ${matches.length}`);
 
    if( matches.length === 0 ) return null;
 
@@ -185,27 +194,63 @@ UUE.prototype.decodeFile = function(text, filename){
       if( fileFound !== null ) return;
 
       if( nextMatch[1].length < 1 ){
-         fileFound = new Buffer(0);
+         fileFound = Buffer.alloc(0);
          return;
       }
 
       var decodingError = false;
       var decoded = nextMatch[1].split('\n');
+      //console.log('FOO', JSON.stringify(decoded, null, 2));
       decoded.pop(); // cut last \n (it is not a separator)
       decoded = decoded.map(lineUUE => {
+
          /* jshint bitwise:false */
          if( decodingError ) return null;
 
-         var byteLength = (lineUUE.charCodeAt(0) - 32) % 64;
-         if( byteLength === 0 ) return new Buffer(0);
+         //console.log(`checking ${lineUUE}`);
 
+         // Number of bytes in the line.
+         var byteLength = (lineUUE.charCodeAt(0) - 32) % 64;
+
+         //console.log(`  byteLength = ${byteLength}`);
+         if( byteLength === 0 ) return Buffer.alloc(0);
+
+         // Number of characters: 3 bytes --> 4 characters
+         // Note the '|0' truncates the fractional part.
          var charLength = ( (byteLength / 3) |0 ) * 4;
+
+         // Adjust for the last line.
+         // The last line of the encoded data may not have
+         // an exactly divisible-by-3 number of bytes. If
+         // there are extra bytes left, pad by four chars
+         // to accommodate padding bytes. (e.g., an extra
+         // 1 byte will be padded by 2 padding bytes to
+         // ensure we are able to output 4 encoded characters)
          if( byteLength % 3 !== 0 ) charLength += 4;
+
+         //console.log(`  charLength = ${charLength}`);
+         //console.log(`  lineUUE.length = ${lineUUE.length}`);
+
+         // # of chars + 1 count byte + 1 newline
+         // max length is 62: 1 count byte + 60 chars + 1 newline
+
+         // Some uuencoded text is saved via a mechanism that strips
+         // trailing ' ' characters from each line of data (e.g., a
+         // text editor or some kind of text post-processor). Stripping
+         // the trailing ' ' characters corrupts the uuencoded text.
+         // Here, we try to fix those corrupted lines by adding back
+         // the trailing ' ' characters.
+         lineUUE = this.helpers.repairLineLength(lineUUE, charLength);
+
+         // Sanity check: 1 count char + n data chars
+         // should not be > entire line
          if( 1 + charLength > lineUUE.length ){
+            //console.log(`${charLength} !== ${lineUUE.length}`);
+            //console.log('got decoding error!');
             decodingError = true;
             return null;
          }
-         var targetBuffer = new Buffer(byteLength);
+         var targetBuffer = Buffer.alloc(byteLength);
 
          var step, total;
          var stringOffset = 1;
@@ -253,7 +298,7 @@ UUE.prototype.decodeAllFiles = function(text){
          '(',
          '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
          ')',
-         '(?:`| )\n',
+         '(?:`| )?\n', // allow an empty line as well
          'end$'
       ].join(''),
       'gm'
@@ -269,6 +314,8 @@ UUE.prototype.decodeAllFiles = function(text){
       }
    } while( continueSearch );
 
+   // console.log(`matches.length === ${matches.length}`);
+
    if( matches.length === 0 ) return [];
 
    matches.forEach(nextMatch => {
@@ -281,7 +328,7 @@ UUE.prototype.decodeAllFiles = function(text){
       if( nextMatch[2].length < 1 ){
          allFiles.push({
             name: nextFilename,
-            data: new Buffer(0)
+            data: Buffer.alloc(0)
          });
          return;
       }
@@ -294,15 +341,19 @@ UUE.prototype.decodeAllFiles = function(text){
          if( decodingError ) return null;
 
          var byteLength = (lineUUE.charCodeAt(0) - 32) % 64;
-         if( byteLength === 0 ) return new Buffer(0);
+         if( byteLength === 0 ) return Buffer.alloc(0);
 
          var charLength = ( (byteLength / 3) |0 ) * 4;
          if( byteLength % 3 !== 0 ) charLength += 4;
+
+         lineUUE = this.helpers.repairLineLength(lineUUE, charLength);
+
          if( 1 + charLength > lineUUE.length ){
+            //console.log('got decoding error');
             decodingError = true;
             return null;
          }
-         var targetBuffer = new Buffer(byteLength);
+         var targetBuffer = Buffer.alloc(byteLength);
 
          var step, total;
          var stringOffset = 1;
@@ -351,7 +402,7 @@ UUE.prototype.split = function(text){
          '(',
          '^begin [0-7]{3} \\S(?:.*?\\S)?\n',
          '(?:[\x20-\x60]+\n)*', // allow garbage after significant characters
-         '(?:`| )\n',
+         '(?:`| )?\n', // allow an empty line as well
          'end$',
          ')'
       ].join(''),
@@ -400,6 +451,30 @@ UUE.prototype.split = function(text){
       }
       return builtArray;
    }, []);
+};
+
+UUE.prototype.helpers = {
+   repairLineLength: function(lineUUE, expectedCharLength) {
+      var hasNewline = /\n$/.test(lineUUE);
+      var repairedLineUUE = lineUUE;
+
+      // cut off ending newline
+      if (hasNewline) {
+         repairedLineUUE = lineUUE.slice(0, -1);
+      }
+
+      // pad line with spaces to achieve correct length
+      // note that this is expectedCharLength + 1, where the "+ 1" is for
+      // the count character at the beginning of line.
+      repairedLineUUE = repairedLineUUE.padEnd(expectedCharLength + 1, ' ');
+
+      // add newline back
+      if (hasNewline) {
+         repairedLineUUE = `${repairedLineUUE}\n`;
+      }
+
+      return repairedLineUUE;
+   }
 };
 
 UUE.prototype.errors = {
