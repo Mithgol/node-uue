@@ -612,7 +612,28 @@ describe('Real world example: XBRL', function(){
 
    describe('multiple UUE file finder and decoder', function(){
       it("decodes a file containing multiple encoded text blocks", function(){
-         assert.fail('implement me');
+         var basename = '0000320193-20-000096.txt';
+         var file = path.join(__dirname, `xbrl/${basename}`);
+         var encoded = fs.readFileSync(file).toString();
+         var actualDecoded = UUE.decodeAllFiles(encoded, basename);
+
+         var actualDecodedNames = actualDecoded.map(obj => obj.name);
+
+         assert.deepEqual(actualDecodedNames, [
+            'aapl-20200926_g1.jpg',
+            'aapl-20200926_g2.jpg',
+            'Financial_Report.xlsx',
+            '0000320193-20-000096-xbrl.zip'
+         ]);
+
+         basename = actualDecodedNames[0];
+         var expectedDecodedFile = path.join(__dirname, `xbrl/${basename}`);
+         var expectedDecoded = fs.readFileSync(expectedDecodedFile);
+
+         assert.strictEqual(
+            actualDecoded[0].data.toString('binary'),
+            expectedDecoded.toString('binary')
+         );
       });
    });
 });
